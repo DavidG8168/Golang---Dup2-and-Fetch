@@ -1,0 +1,138 @@
+// ****************************************************************************************************************************
+// EX 1.4 -- START
+package main
+
+import (
+	"bufio"
+	"fmt"
+	"os"
+)
+
+var files []string = os.Args[1:]
+var linesStdin = map[string]int{}
+var counts = map[string]map[string]int{}
+
+func main() {
+        // If no files use the Stdin to map.
+	if len(files) == 0 {
+		countStdin(os.Stdin, linesStdin)
+		for line, n := range linesStdin {
+			if n > 1 {
+				fmt.Printf("%s\t%d\n", line, n)
+			}
+		}
+        // If there are files count the lines for each one.
+	} else {
+		for _, arg := range files {
+			counts[arg] = map[string]int{}
+			f, err := os.Open(arg)
+			if err != nil {
+				fmt.Fprintf(os.Stderr, "dup2: %v\n", err)
+				continue
+			}
+			countLines(f, counts)
+			f.Close()
+		}
+		for fileName, innerMap := range counts {
+			for line, n := range innerMap {
+				if n > 1 {
+					fmt.Printf("%s\t%s\t%d\n", fileName, line, n)
+				}
+			}
+		}
+	}
+}
+
+// Maps the lines and their amount.
+func countStdin(f *os.File, linesStdin map[string]int) {
+	input := bufio.NewScanner(f)
+	for input.Scan() {
+		linesStdin[input.Text()]++
+	}
+
+}
+
+func countLines(f *os.File, counts map[string]map[string]int) {
+	input := bufio.NewScanner(f)
+	for input.Scan() {
+		counts[f.Name()][input.Text()]++
+	}
+}
+// EX 1.4 -- END
+// ****************************************************************************************************************************
+// EX 1.7 -- START
+
+// Fetch prints the content found at a URL.
+package main
+
+import (
+"fmt"
+// Use this package instead.
+"io"
+"net/http"
+"os"
+)
+
+func main() {
+    // Keep this part the same.
+    // Iterate command line argument urls.
+    for _, url := range os.Args[1:] {
+        resp, err := http.Get(url)
+        // Print errors if encountered.
+        if err != nil {
+            fmt.Fprintf(os.Stderr, "fetch: %v\n", err)
+            os.Exit(1)
+        }
+        // Modify function here.
+        // Copy response body to stdout.
+        // io.Copy(dst, src)
+        _, err = io.Copy(os.Stdout, resp.Body)
+        resp.Body.Close()
+        if err != nil {
+            // Modify to print only error.
+            fmt.Fprintf(os.Stderr, "fetch: reading %s: %v\n", err)
+            os.Exit(1)
+        }
+    }
+}
+// EX 1.7 -- END
+// ****************************************************************************************************************************
+// EX 1.9 -- START
+
+// Fetch prints the content found at a URL.
+package main
+
+import (
+"fmt"
+// Use this package instead.
+"io"
+"net/http"
+"os"
+)
+
+func main() {
+    // Keep this part the same.
+    // Iterate command line argument urls.
+    for _, url := range os.Args[1:] {
+        resp, err := http.Get(url)
+        // Print errors if encountered.
+        if err != nil {
+            fmt.Fprintf(os.Stderr, "fetch: %v\n", err)
+            os.Exit(1)
+        }
+	// Add printing the HTTP status code here.
+	fmt.Printf("The HTTP status is: %s\n", resp.Status)
+        // Modify function here.
+        // Copy response body to stdout.
+        // io.Copy(dst, src)
+        _, err = io.Copy(os.Stdout, resp.Body)
+        resp.Body.Close()
+        if err != nil {
+            // Modify to print only error.
+            fmt.Fprintf(os.Stderr, "fetch: reading %s: %v\n", err)
+            os.Exit(1)
+        }
+    }
+}
+// EX 1.9 -- END
+// ****************************************************************************************************************************
